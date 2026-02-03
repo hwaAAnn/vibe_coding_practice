@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사자성어 퀴즈</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* 청와대 공식 CI 색상 - PANTONE 281 C, PANTONE 873C */
+      --navy: #00205c;
+      --navy-light: #1a3a7c;
+      --gold: #997a4f;
+      --gold-light: #b3946a;
+      --white: #ffffff;
+      --gray-50: #f8f9fa;
+      --gray-100: #e9ecef;
+      --gray-600: #495057;
+      --gray-800: #212529;
+      --correct: #0d6b3a;
+      --wrong: #c41e3a;
+      --border: #dee2e6;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--gray-50);
+      min-height: 100vh;
+      color: var(--gray-800);
+      line-height: 1.6;
+    }
+
+    .top-bar {
+      background: var(--navy);
+      color: var(--white);
+      padding: 0.875rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 2rem 1rem;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 0;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--navy);
+    }
+
+    h1 span {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .score-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--gray-100);
+      font-size: 0.9rem;
+      color: var(--gray-600);
+      font-weight: 500;
+    }
+
+    .quiz-card {
+      background: var(--white);
+      padding: 2rem;
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    .meaning-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--navy);
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+
+    .meaning-text {
+      font-size: 1.15rem;
+      font-weight: 500;
+      line-height: 1.9;
+      color: var(--gray-800);
+      min-height: 4em;
+    }
+
+    .answer-area {
+      margin-top: 1.5rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      font-size: 1.2rem;
+      font-family: inherit;
+      border: 2px solid var(--border);
+      text-align: center;
+      letter-spacing: 0.15em;
+      transition: border-color 0.2s;
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: var(--navy);
+    }
+
+    .answer-input::placeholder {
+      letter-spacing: 0.05em;
+      color: #adb5bd;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--navy);
+      color: var(--white);
+      margin-top: 1rem;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--navy-light);
+    }
+
+    .btn-secondary {
+      background: var(--gray-800);
+      color: var(--white);
+      margin-top: 0.75rem;
+    }
+
+    .result {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      font-weight: 500;
+      display: none;
+      border-left: 4px solid;
+    }
+
+    .result.correct {
+      display: block;
+      background: rgba(13, 107, 58, 0.08);
+      color: var(--correct);
+      border-left-color: var(--correct);
+    }
+
+    .result.wrong {
+      display: block;
+      background: rgba(196, 30, 58, 0.08);
+      color: var(--wrong);
+      border-left-color: var(--wrong);
+    }
+
+    .result .answer-show {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-top: 0.5rem;
+      letter-spacing: 0.12em;
+    }
+
+    .progress-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gray-100);
+      transition: background 0.3s;
+    }
+
+    .dot.done {
+      background: var(--correct);
+    }
+
+    .dot.wrong {
+      background: var(--wrong);
+    }
+
+    .final-score {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .final-score h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--navy);
+    }
+
+    .final-score p {
+      color: var(--gray-600);
+      margin-bottom: 1rem;
+    }
+
+    .final-score .big {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--gray-600);
+    }
+
+    /* 연락 모달 */
+    .contact-btn {
+      display: block;
+      width: 100%;
+      padding: 1rem 1.5rem;
+      margin-top: 1.5rem;
+      background: var(--gold);
+      color: var(--white);
+      border: none;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .contact-btn:hover {
+      background: var(--gold-light);
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 32, 92, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--white);
+      max-width: 420px;
+      width: 100%;
+      padding: 2rem;
+      border: 1px solid var(--border);
+    }
+
+    .modal h3 {
+      font-size: 1.1rem;
+      color: var(--navy);
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--gray-800);
+      margin-bottom: 0.35rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 2px solid var(--border);
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--navy);
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .modal-buttons .btn {
+      margin-top: 0;
+      flex: 1;
+    }
+
+    .modal-close {
+      background: var(--gray-100) !important;
+      color: var(--gray-800) !important;
+    }
+
+    .modal-close:hover {
+      background: var(--border) !important;
+    }
+
+    .form-success, .form-error {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .form-success {
+      background: rgba(13, 107, 58, 0.1);
+      color: var(--correct);
+    }
+
+    .form-error {
+      background: rgba(196, 30, 58, 0.1);
+      color: var(--wrong);
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">사자성어 뜻 맞추기 퀴즈</div>
+  <div class="container">
+    <header>
+      <h1><span>사자성어</span> 뜻 맞추기</h1>
+      <div class="score-bar">
+        <span id="score-text">0 / 0</span>
+        <span id="progress-text">문제 1</span>
+      </div>
+    </header>
+
+    <main id="quiz-main">
+      <div class="quiz-card">
+        <div class="meaning-label">뜻</div>
+        <div class="meaning-text" id="meaning"></div>
+        <div class="answer-area">
+          <input type="text" id="answer" class="answer-input" placeholder="사자성어 4글자를 입력하세요" maxlength="4" autocomplete="off">
+          <button type="button" class="btn btn-primary" id="submit-btn">정답 확인</button>
+          <button type="button" class="btn btn-secondary" id="next-btn" style="display: none;">다음 문제</button>
+        </div>
+        <div class="result" id="result"></div>
+      </div>
+      <div class="progress-dots" id="progress-dots"></div>
+    </main>
+
+    <main id="final-screen" style="display: none;">
+      <div class="quiz-card final-score">
+        <h2>퀴즈 완료!</h2>
+        <p>총 <span id="total-count">0</span>문제 중</p>
+        <p class="big"><span id="final-score">0</span>개 맞춤</p>
+        <button type="button" class="btn btn-primary" id="restart-btn">다시 도전</button>
+      </div>
+    </main>
+
+    <footer>
+      뜻을 보고 사자성어를 맞춰보세요
+      <button type="button" class="contact-btn" id="contact-btn">사자성어/한문 공부가 하고싶다면 연락주세요</button>
+    </footer>
+  </div>
+
+  <!-- 연락 모달 -->
+  <div class="modal-overlay" id="contact-modal">
+    <div class="modal">
+      <h3>연락처를 남겨주세요</h3>
+      <form id="contact-form">
+        <div class="form-group">
+          <label for="contact-name">이름</label>
+          <input type="text" id="contact-name" name="name" required placeholder="이름을 입력하세요">
+        </div>
+        <div class="form-group">
+          <label for="contact-phone">전화번호</label>
+          <input type="tel" id="contact-phone" name="phone" required placeholder="010-0000-0000">
+        </div>
+        <div class="form-group">
+          <label for="contact-email">이메일</label>
+          <input type="email" id="contact-email" name="email" required placeholder="example@email.com">
+        </div>
+        <div class="form-success" id="form-success">접수가 완료되었습니다. 빠른 시일 내에 연락드리겠습니다.</div>
+        <div class="form-error" id="form-error">전송에 실패했습니다. 잠시 후 다시 시도해주세요.</div>
+        <div class="modal-buttons">
+          <button type="button" class="btn modal-close" id="modal-close">닫기</button>
+          <button type="submit" class="btn btn-primary">보내기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const idioms = [
+      { word: "고진감래", meaning: "고생 끝에 즐거움이 온다" },
+      { word: "금상첨화", meaning: "금 위에 꽃을 더한다는 뜻으로, 좋은 일 위에 더 좋은 일이 더해짐" },
+      { word: "수수방관", meaning: "팔짱을 끼고 구경만 함. 일에 간섭하지 않고 방임함" },
+      { word: "과유불급", meaning: "지나침은 미치지 못함만 못하다" },
+      { word: "동문서답", meaning: "물은 동쪽인데 답은 서쪽으로 한다. 전혀 엉뚱한 대답" },
+      { word: "오합지졸", meaning: "제대로 훈련되지 않은 어중이떠중이의 무리" },
+      { word: "금의야행", meaning: "비단 옷을 입고 밤에 다닌다. 재능이 있어도 알려지지 않음" },
+      { word: "화이부동", meaning: "말은 옳으나 마음이 통하지 않음" },
+      { word: "각골난망", meaning: "뼈에 새길 만큼 잊을 수 없는 은혜" },
+      { word: "일석이조", meaning: "한 가지 행동으로 두 가지 이익을 얻음" },
+      { word: "역지사지", meaning: "상대방 입장에서 생각해 봄" },
+      { word: "유비무환", meaning: "미리 준비하면 근심이 없다" },
+      { word: "다다익선", meaning: "많을수록 더 좋다" },
+      { word: "망어지수", meaning: "물고기가 물을 잊다. 은혜를 잊고 배은망덕함" },
+      { word: "수어지교", meaning: "물과 물고기의 친함. 떨어질 수 없는 친밀한 관계" },
+      { word: "결초보은", meaning: "매에 대한 은혜를 갚음. 작은 은혜라도 반드시 갚음" },
+      { word: "배은망덕", meaning: "은혜를 입고도 감사함을 모르고 도리어 해를 끼침" },
+      { word: "자업자득", meaning: "자기가 한 일의 결과를 자기가 받음" }
+    ];
+
+    let currentIndex = 0;
+    let correctCount = 0;
+    let answers = [];
+    let quizOrder = [];
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function startQuiz() {
+      quizOrder = shuffle(idioms);
+      currentIndex = 0;
+      correctCount = 0;
+      answers = [];
+      document.getElementById("quiz-main").style.display = "block";
+      document.getElementById("final-screen").style.display = "none";
+      showQuestion();
+      updateProgress();
+    }
+
+    function showQuestion() {
+      const q = quizOrder[currentIndex];
+      document.getElementById("meaning").textContent = q.meaning;
+      document.getElementById("answer").value = "";
+      document.getElementById("answer").disabled = false;
+      document.getElementById("submit-btn").style.display = "block";
+      document.getElementById("next-btn").style.display = "none";
+      document.getElementById("result").className = "result";
+      document.getElementById("result").textContent = "";
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("answer").focus();
+    }
+
+    function checkAnswer() {
+      const userAnswer = document.getElementById("answer").value.trim();
+      const correct = quizOrder[currentIndex];
+      const isCorrect = userAnswer === correct.word;
+
+      if (isCorrect) correctCount++;
+      answers.push({ ...correct, userAnswer, isCorrect });
+
+      document.getElementById("answer").disabled = true;
+      document.getElementById("submit-btn").style.display = "none";
+      document.getElementById("next-btn").style.display = "block";
+
+      const resultEl = document.getElementById("result");
+      resultEl.className = "result " + (isCorrect ? "correct" : "wrong");
+      resultEl.innerHTML = isCorrect
+        ? `정답입니다!`
+        : `틀렸어요. 정답: <span class="answer-show">${correct.word}</span>`;
+
+      updateProgress();
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex >= quizOrder.length) {
+        showFinal();
+      } else {
+        showQuestion();
+      }
+    }
+
+    function updateProgress() {
+      document.getElementById("score-text").textContent = `${correctCount} / ${quizOrder.length}`;
+      document.getElementById("progress-text").textContent = `문제 ${currentIndex + 1}`;
+
+      const dots = document.getElementById("progress-dots");
+      dots.innerHTML = quizOrder.map((_, i) => {
+        let cls = "dot";
+        if (i < currentIndex) cls += answers[i]?.isCorrect ? " done" : " wrong";
+        return `<span class="${cls}"></span>`;
+      }).join("");
+    }
+
+    function showFinal() {
+      document.getElementById("quiz-main").style.display = "none";
+      document.getElementById("final-screen").style.display = "block";
+      document.getElementById("total-count").textContent = quizOrder.length;
+      document.getElementById("final-score").textContent = correctCount;
+    }
+
+    document.getElementById("submit-btn").addEventListener("click", checkAnswer);
+    document.getElementById("next-btn").addEventListener("click", nextQuestion);
+    document.getElementById("restart-btn").addEventListener("click", startQuiz);
+
+    document.getElementById("answer").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        if (document.getElementById("next-btn").style.display === "none") {
+          checkAnswer();
+        } else {
+          nextQuestion();
+        }
+      }
+    });
+
+    // 연락 모달
+    const contactBtn = document.getElementById("contact-btn");
+    const contactModal = document.getElementById("contact-modal");
+    const modalClose = document.getElementById("modal-close");
+    const contactForm = document.getElementById("contact-form");
+    const formSuccess = document.getElementById("form-success");
+    const formError = document.getElementById("form-error");
+
+    contactBtn.addEventListener("click", () => {
+      contactModal.classList.add("open");
+      formSuccess.style.display = "none";
+      formError.style.display = "none";
+    });
+
+    modalClose.addEventListener("click", () => {
+      contactModal.classList.remove("open");
+    });
+
+    contactModal.addEventListener("click", (e) => {
+      if (e.target === contactModal) {
+        contactModal.classList.remove("open");
+      }
+    });
+
+    contactForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      formSuccess.style.display = "none";
+      formError.style.display = "none";
+
+      const payload = {
+        name: document.getElementById("contact-name").value.trim(),
+        phone: document.getElementById("contact-phone").value.trim(),
+        email: document.getElementById("contact-email").value.trim()
+      };
+
+      try {
+        const res = await fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success) {
+          formSuccess.style.display = "block";
+          contactForm.reset();
+        } else {
+          formError.textContent = data.error || "전송에 실패했습니다. 잠시 후 다시 시도해주세요.";
+          formError.style.display = "block";
+        }
+      } catch {
+        formError.textContent = "전송에 실패했습니다. 잠시 후 다시 시도해주세요.";
+        formError.style.display = "block";
+      }
+    });
+
+    startQuiz();
+  </script>
+</body>
+</html>
