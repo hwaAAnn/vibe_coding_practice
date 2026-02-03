@@ -34,6 +34,50 @@
       min-height: 100vh;
       color: var(--gray-800);
       line-height: 1.6;
+      margin: 0;
+    }
+
+    .page-wrapper {
+      display: flex;
+      min-height: 100vh;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .ad-sidebar {
+      width: 180px;
+      min-width: 180px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .ad-sidebar img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--border);
+    }
+
+    .ad-label {
+      font-size: 0.7rem;
+      color: var(--gray-600);
+      letter-spacing: 0.05em;
+    }
+
+    .main-area {
+      flex: 1;
+      min-width: 0;
+    }
+
+    @media (max-width: 900px) {
+      .ad-sidebar {
+        display: none;
+      }
     }
 
     .top-bar {
@@ -360,6 +404,13 @@
   </style>
 </head>
 <body>
+  <div class="page-wrapper">
+    <aside class="ad-sidebar ad-left">
+      <span class="ad-label">광고</span>
+      <img src="https://picsum.photos/160/400?random=1" alt="광고">
+      <img src="https://picsum.photos/160/200?random=2" alt="광고">
+    </aside>
+    <main class="main-area">
   <div class="top-bar">사자성어 뜻 맞추기 퀴즈</div>
   <div class="container">
     <header>
@@ -397,6 +448,13 @@
       뜻을 보고 사자성어를 맞춰보세요
       <button type="button" class="contact-btn" id="contact-btn">사자성어/한문 공부가 하고싶다면 연락주세요</button>
     </footer>
+  </div>
+    </main>
+    <aside class="ad-sidebar ad-right">
+      <span class="ad-label">광고</span>
+      <img src="https://picsum.photos/160/400?random=3" alt="광고">
+      <img src="https://picsum.photos/160/200?random=4" alt="광고">
+    </aside>
   </div>
 
   <!-- 연락 모달 -->
