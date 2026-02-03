@@ -314,6 +314,40 @@
       background: var(--gold-light);
     }
 
+    .donate-btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1.5rem;
+      margin-top: 0.75rem;
+      background: transparent;
+      color: var(--navy);
+      border: 2px solid var(--navy);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .donate-btn:hover {
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    .donate-info {
+      padding: 1rem 0;
+      line-height: 2;
+      color: var(--gray-800);
+      font-size: 1rem;
+    }
+
+    .donate-info .account {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--navy);
+      letter-spacing: 0.05em;
+    }
+
     .modal-overlay {
       display: none;
       position: fixed;
@@ -455,6 +489,7 @@
     <footer>
       뜻을 보고 사자성어를 맞춰보세요
       <button type="button" class="contact-btn" id="contact-btn">사자성어/한문 공부가 하고싶다면 연락주세요</button>
+      <button type="button" class="donate-btn" id="donate-btn">후원하기</button>
     </footer>
   </div>
     </main>
@@ -489,6 +524,18 @@
           <button type="submit" class="btn btn-primary">보내기</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- 후원하기 모달 -->
+  <div class="modal-overlay" id="donate-modal">
+    <div class="modal">
+      <h3>후원하기</h3>
+      <div class="donate-info">
+        <p><strong>계좌번호 :</strong> <span class="account">토스뱅크 1001-****-****</span></p>
+        <p><strong>이름 :</strong> 권민재</p>
+      </div>
+      <button type="button" class="btn modal-close" id="donate-modal-close">닫기</button>
     </div>
   </div>
 
@@ -636,6 +683,25 @@
     contactModal.addEventListener("click", (e) => {
       if (e.target === contactModal) {
         contactModal.classList.remove("open");
+      }
+    });
+
+    // 후원하기 모달
+    const donateBtn = document.getElementById("donate-btn");
+    const donateModal = document.getElementById("donate-modal");
+    const donateModalClose = document.getElementById("donate-modal-close");
+
+    donateBtn.addEventListener("click", () => {
+      donateModal.classList.add("open");
+    });
+
+    donateModalClose.addEventListener("click", () => {
+      donateModal.classList.remove("open");
+    });
+
+    donateModal.addEventListener("click", (e) => {
+      if (e.target === donateModal) {
+        donateModal.classList.remove("open");
       }
     });
 
